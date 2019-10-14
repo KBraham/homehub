@@ -10,6 +10,7 @@ class ESPLedStripWarmWhite(framework.Service):
         self.serviceName = __class__.__name__
         self.debug(lambda: 'Starting class ' + self.serviceName)
 
+        # List of all decives to follow and subscribe
         self.topicFilter = [
             'living/light1/switch',
             'living/light1/brightness/set',
@@ -22,6 +23,8 @@ class ESPLedStripWarmWhite(framework.Service):
         ]
 
     def onMessage(self, topic, payload):
+        """Callback from router for message updates"""
+
         # Convert led messages to old format
         # /kbdim/18:fe:34:f2:f5:de/1/ {"payload": {"l": 0, "ft": 1000}}
         # /kbdim/18:fe:34:f2:f5:de/2/ {"payload": {"l": 0, "ft": 1000}}
@@ -56,6 +59,7 @@ class ESPLedStripWarmWhite(framework.Service):
             self._router.sendMessage("living/light2/brightness/status", str(level))
 
     def convertBrightness(self, in_level):
+        """Exponential conversion from level to brightness value"""
         maxp = 31
         maxv = 6.9305
         scale = maxv / maxp
@@ -64,6 +68,7 @@ class ESPLedStripWarmWhite(framework.Service):
         return int(level + .5)
 
     def convertBrightnessInverse(self, in_level):
+        """Exponential conversion from brightness value to level"""
         maxp = 31
         maxv = 6.9305
         scale = maxp / maxv
